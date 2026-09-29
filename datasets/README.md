@@ -3,11 +3,14 @@
 This directory is intentionally Git-ignored except for this file. Keep the actual datasets outside
 version control and reference their absolute locations only from `configs/paths.local.yaml`.
 
-Required datasets:
+Required formal dataset:
 
-1. FaceForensics++ c23, preferably DeepfakeBench preprocessed cropped faces and metadata;
-2. Celeb-DF-v2, prepared using the same DeepfakeBench conventions;
-3. optional small DF40 subsets: SimSwap, FOMM, DiT, and StarGANv2.
+1. UADFV only, using the DeepfakeBench-preprocessed RGB structure:
+   `real/frames/<video_id>/*.png`, `fake/frames/<video_id>/*.png`, plus the matching
+   `landmarks/` directories.
 
-Run `python scripts/check_dataset.py` before an evaluation. The project never downloads a dataset
-automatically.
+FaceForensics++, Celeb-DF-v2, and DF40 are not required in this lightweight course plan. An
+optional FF++ Mini may be used only for demo/debug and must not be reported as formal results.
+
+Run `python scripts/check_dataset.py --dataset uadfv` before an evaluation. The project never
+downloads a dataset automatically.

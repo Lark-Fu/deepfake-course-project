@@ -36,3 +36,31 @@ def binary_metrics(labels: np.ndarray, probabilities: np.ndarray, threshold: flo
         "f1": float(f1),
         "threshold": float(threshold),
     }
+
+
+def bootstrap_confidence_intervals(
+    labels: np.ndarray,
+    probabilities: np.ndarray,
+    threshold: float = 0.5,
+    resamples: int = 1000,
+    seed: int = 1024,
+) -> dict[str, list[float]]:
+    """Return percentile 95% CIs at video level, skipping one-class resamples."""
+    labels = np.asarray(labels, dtype=int)
+    probabilities = np.asarray(probabilities, dtype=float)
+    if len(labels) != len(probabilities) or len(labels) < 2:
+        raise ValueError("labels and probabilities must contain the same number of samples (at least two).")
+    generator = np.random.default_rng(seed)
+    collected: dict[str, list[float]] = {"auroc": [], "average_precision": [], "eer": []}
+    while len(collected["auroc"]) < resamples:
+        indices = generator.integers(0, len(labels), size=len(labels))
+        sampled_labels = labels[indices]
+        if np.unique(sampled_labels).size != 2:
+            continue
+        result = binary_metrics(sampled_labels, probabilities[indices], threshold)
+        for key in collected:
+            collected[key].append(result[key])
+    return {
+        key: [float(np.percentile(values, 2.5)), float(np.percentile(values, 97.5))]
+        for key, values in collected.items()
+    }

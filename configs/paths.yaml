@@ -4,10 +4,10 @@ deepfakebench_root: third_party/DeepfakeBench
 effort_bench_root: third_party/Effort-AIGI-Detection/DeepfakeBench
 weights_dir: weights
 experiments_dir: experiments
-datasets:
-  ffpp: <FFPP_PATH>
-  celebdf_v2: <CELEBDF_PATH>
-  df40: <DF40_PATH>
+# The only required formal dataset. Keep the absolute server path in paths.local.yaml.
+uadfv_root: null
+# Optional: permitted only for demo/debug; never report its metrics as formal generalization results.
+ffpp_mini_root: null
 checkpoints:
   xception: weights/<OFFICIAL_XCEPTION_CHECKPOINT>.pth
   effort: weights/<OFFICIAL_EFFORT_CHECKPOINT>.pth

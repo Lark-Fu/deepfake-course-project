@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Calibrate a single F1-maximizing threshold from validation predictions."""
+"""Deprecated: formal UADFV evaluation uses the fixed 0.5 model threshold."""
 from __future__ import annotations
 
 import argparse
@@ -15,6 +15,7 @@ from metrics_utils import calibrate_f1
 
 
 def main() -> int:
+    raise SystemExit("Deprecated for this project: do not optimize a threshold on UADFV labels. Use 0.5.")
     parser = argparse.ArgumentParser()
     parser.add_argument("--predictions", type=Path, required=True, help="Validation CSV with label and frame_probability columns.")
     parser.add_argument("--model", choices=("xception", "effort"), required=True)

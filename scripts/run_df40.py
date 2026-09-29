@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Entry point reserved for the optional DF40 extension experiment."""
+"""Deprecated: DF40 is outside the lightweight UADFV-only plan."""
 from __future__ import annotations
 
 from run_ffpp import main

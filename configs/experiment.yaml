@@ -3,7 +3,11 @@ device: cuda
 batch_size: 16
 num_workers: 4
 max_video_frames: 32
+formal_sampling_frames: [8, 16, 32]
+demo_default_frames: 16
 minimum_valid_faces: 5
 aggregation: mean
+fixed_decision_threshold: 0.5
+bootstrap_resamples: 1000
 image_extensions: [".jpg", ".jpeg", ".png", ".bmp", ".webp"]
 video_extensions: [".mp4", ".avi", ".mov", ".mkv"]

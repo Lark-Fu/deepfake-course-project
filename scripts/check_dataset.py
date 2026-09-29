@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate configured dataset roots without modifying data."""
+"""Validate the preprocessed UADFV layout without modifying data."""
 from __future__ import annotations
 
 import argparse
@@ -15,14 +15,14 @@ def is_placeholder(value: object) -> bool:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Check an externally stored DeepFake dataset path.")
     parser.add_argument("--config", type=Path, default=Path("configs/paths.local.yaml"))
-    parser.add_argument("--dataset", choices=("ffpp", "celebdf_v2", "df40"), required=True)
+    parser.add_argument("--dataset", choices=("uadfv",), default="uadfv")
     args = parser.parse_args()
     if not args.config.is_file():
         print(f"Missing local configuration: {args.config}")
         print("Copy configs/paths.yaml to configs/paths.local.yaml and set the dataset path.")
         return 2
     config = yaml.safe_load(args.config.read_text(encoding="utf-8")) or {}
-    value = (config.get("datasets") or {}).get(args.dataset)
+    value = config.get("uadfv_root")
     if is_placeholder(value):
         print(f"Dataset path for {args.dataset} is not configured.")
         return 2
@@ -30,16 +30,22 @@ def main() -> int:
     if not root.exists():
         print(f"Dataset path does not exist: {root}")
         return 1
-    image_suffixes = {".jpg", ".jpeg", ".png"}
-    video_suffixes = {".mp4", ".avi", ".mov", ".mkv"}
-    image_count = sum(1 for path in root.rglob("*") if path.suffix.lower() in image_suffixes)
-    video_count = sum(1 for path in root.rglob("*") if path.suffix.lower() in video_suffixes)
-    json_count = sum(1 for _ in root.rglob("*.json"))
-    print(f"Dataset: {args.dataset}")
+    class_dirs = {label: root / label / "frames" for label in ("real", "fake")}
+    if not all(path.is_dir() for path in class_dirs.values()):
+        print("Expected DeepfakeBench RGB layout: real/frames/<video>/ and fake/frames/<video>/.")
+        return 1
+    counts = {label: len([item for item in path.iterdir() if item.is_dir()]) for label, path in class_dirs.items()}
+    png_counts = {label: sum(1 for item in path.rglob("*.png")) for label, path in class_dirs.items()}
+    total = sum(counts.values())
+    print("Dataset: UADFV")
     print(f"Path: {root}")
-    print(f"Images: {image_count}")
-    print(f"Videos: {video_count}")
-    print(f"Metadata JSON: {json_count}")
+    print(f"Real videos: {counts['real']}")
+    print(f"Fake videos: {counts['fake']}")
+    print(f"Total videos: {total}")
+    print(f"PNG frames: real={png_counts['real']}, fake={png_counts['fake']}, total={sum(png_counts.values())}")
+    if counts != {"real": 49, "fake": 49}:
+        print("UADFV validation failed: expected 49 Real + 49 Fake videos.")
+        return 1
     return 0
 
 

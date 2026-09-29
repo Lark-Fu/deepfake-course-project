@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import sys
+import time
 from functools import lru_cache
 from pathlib import Path
 
@@ -54,21 +55,26 @@ def detect_image(image, model_name: str):
     if face is None:
         return "No face detected. Upload a clear, frontal face image."
     try:
+        started = time.perf_counter()
         models = ["xception", "effort"] if model_name == "Compare both" else [model_name.lower()]
         scores = {name: predict_image(_adapter(name), face) for name in models}
     except ModelUnavailableError as exc:
         return str(exc)
-    text = "\n".join(f"{name.title()}: {_label(score)} ({score:.2%})" for name, score in scores.items())
+    text = "\n".join(
+        [*(f"{name.title()}: {_label(score)} ({score:.2%})" for name, score in scores.items()),
+         f"Inference time: {time.perf_counter() - started:.2f}s"]
+    )
     return text
 
 
-def detect_video(video_path: str, model_name: str):
+def detect_video(video_path: str, model_name: str, max_frames: int = 16):
     if not video_path:
         return "Upload an MP4 video.", None, []
-    frames = extract_faces(video_path)
+    frames = extract_faces(video_path, max_frames=int(max_frames))
     if len(frames.faces_rgb) < 5:
         return f"Insufficient valid face frames: {len(frames.faces_rgb)} / {len(frames.sampled_indices)}. Unable to judge reliably.", None, []
     try:
+        started = time.perf_counter()
         models = ["xception", "effort"] if model_name == "Compare both" else [model_name.lower()]
         scores = {name: predict_batch(_adapter(name), frames.faces_rgb) for name in models}
     except ModelUnavailableError as exc:
@@ -81,7 +87,12 @@ def detect_video(video_path: str, model_name: str):
     figure = probability_curve(frames.timestamps, curve_values)
     ranked = sorted(zip(frames.faces_rgb, frames.timestamps, curve_values), key=lambda item: item[2], reverse=True)[:5]
     gallery = [(face, f"{timestamp:.2f}s — {score:.2%}") for face, timestamp, score in ranked]
-    info = "\n".join(summary + [f"Total frames: {frames.total_frames}", f"Sampled: {len(frames.sampled_indices)}", f"Valid faces: {len(frames.faces_rgb)}"])
+    info = "\n".join(summary + [
+        f"Total frames: {frames.total_frames}",
+        f"Sampled: {len(frames.sampled_indices)}",
+        f"Valid faces: {len(frames.faces_rgb)}",
+        f"Inference time: {time.perf_counter() - started:.2f}s",
+    ])
     return info, figure, gallery
 
 
@@ -95,11 +106,12 @@ with gr.Blocks(title="DeepFake 智能检测与分析系统") as demo:
         image_button.click(detect_image, [image, model_choice], image_result)
     with gr.Tab("Video"):
         video = gr.Video(label="MP4 video")
+        video_frames = gr.Radio([8, 16, 32], value=16, label="Uniformly sampled frames")
         video_button = gr.Button("Detect video")
         video_result = gr.Textbox(label="Result", lines=6)
         curve = gr.Plot(label="Frame-level fake probability")
         suspicious = gr.Gallery(label="Top-5 suspicious frames", columns=5, object_fit="contain")
-        video_button.click(detect_video, [video, model_choice], [video_result, curve, suspicious])
+        video_button.click(detect_video, [video, model_choice, video_frames], [video_result, curve, suspicious])
 
 
 if __name__ == "__main__":

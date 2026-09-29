@@ -44,10 +44,12 @@ tmp/
 temp/
 cache/
 outputs/
+experiments/*
+!experiments/README.md
+!experiments/predictions/
 logs/*
 !logs/.gitkeep
 *.log
-experiments/predictions/*
 !experiments/predictions/.gitkeep
 
 # Third-party source
