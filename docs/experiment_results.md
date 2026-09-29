@@ -48,3 +48,27 @@ subset was 0.920 (6 errors), with precision 0.887, recall 1.000, and F1 0.940. M
 Xception/Effort probability gap was 0.081 for agreements and 0.322 for disagreements. This is a
 selective-classification behavior analysis, not a new detection metric. The scatter plot and detailed
 per-video analysis remain local in `experiments/consensus_20260929/`.
+
+## Experiment 4 — In-memory degradation robustness
+
+Run: `degradation_20260929`. This separate full evaluation reused all 98 UADFV videos with a
+16-frame request, frozen checkpoints, mean video aggregation, and fixed threshold 0.5. `jpeg70`
+and `resize50` were generated only from decoded in-memory frame copies; the original UADFV files
+were not changed. “AUROC change” is `condition - original` for the same model, so a positive value
+is an observed increase rather than a robustness loss.
+
+| Model | Condition | AUROC | AP | EER | Time/video | AUROC change |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| Xception | original | 0.9608 | 0.9667 | 0.0816 | 0.419 s | 0.0000 |
+| Xception | jpeg70 | 0.9763 | 0.9796 | 0.1224 | 0.418 s | +0.0154 |
+| Xception | resize50 | 0.9696 | 0.9729 | 0.1020 | 0.389 s | +0.0087 |
+| Effort | original | 0.9767 | 0.9840 | 0.0408 | 0.919 s | 0.0000 |
+| Effort | jpeg70 | 0.9679 | 0.9782 | 0.0408 | 0.902 s | -0.0087 |
+| Effort | resize50 | 0.9742 | 0.9821 | 0.0204 | 0.922 s | -0.0025 |
+
+The observed effect is model- and perturbation-dependent: Xception's AUROC was higher in both
+perturbed conditions in this finite run, whereas Effort's AUROC fell by 0.0087 with `jpeg70` and
+0.0025 with `resize50`. These are descriptive measurements under the stated protocol, not evidence
+that compression or resizing generally improves or harms either detector. The per-video predictions,
+summary, manifest, and corrected AUROC/AP/change figures are retained locally in the ignored
+`experiments/degradation_20260929/figures_corrected/` directory.

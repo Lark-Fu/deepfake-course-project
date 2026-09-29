@@ -5,8 +5,9 @@
 The only formal dataset is DeepfakeBench-preprocessed UADFV: 49 real and 49 fake videos. Both
 Xception and Effort use unchanged checkpoints trained on FaceForensics++. This is a
 cross-dataset generalization evaluation from the FaceForensics++ source domain to the UADFV target
-domain. No training, fine-tuning, target-domain threshold selection, recompression, resizing, or
-color-space conversion is permitted.
+domain. No training, fine-tuning, target-domain threshold selection, or persistent modification of
+the supplied data is permitted. Experiment 4 is the sole exception for *ephemeral in-memory input
+perturbations*; it neither overwrites nor creates UADFV image files.
 
 The video-level probability is always `mean(frame_probability)`. The classification threshold is
 the unchanged model-default value 0.5. Accuracy, precision, recall, and F1 are supplemental only;
@@ -42,6 +43,21 @@ setting, resample the same 98 video indices with replacement for Xception and Ef
 5,000 valid resamples with seed 2026, skipping one-class resamples. Report the distribution of
 `Effort - Xception` AUROC and AP, including the percentile interval and the fraction of resamples
 where the delta is positive. This fraction is descriptive and is not a conventional p-value.
+
+## Experiment 4 — In-memory Degradation Robustness
+
+Reuse the same 98 UADFV videos and request 16 uniformly selected frames per video. Keep the
+unchanged checkpoints, mean video aggregation, and the fixed 0.5 threshold. Evaluate three input
+conditions independently: `original`; `jpeg70`, produced by JPEG encode/decode at quality 70 only
+in RAM; and `resize50`, produced by resizing each decoded frame to 50% with `INTER_AREA` and then
+back to its original dimensions with `INTER_CUBIC`, also only in RAM. Do not write transformed
+frames to disk or alter the supplied UADFV tree.
+
+For each model and condition, record video-level AUROC, AP, EER, fixed-threshold auxiliary metrics,
+total runtime, per-video runtime, actual frame count, and peak GPU memory. Report the measured
+change from `original` separately for each model; do not assume every perturbation lowers every
+metric. Every full run must have a manifest and per-video CSV, and output directories are
+append-only.
 
 ## Experiment 5 — Dual-model Consensus and Uncertainty
 

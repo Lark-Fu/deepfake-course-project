@@ -7,6 +7,9 @@ UADFV 上进行视频级 DeepFake 检测。项目不训练、不微调模型，�
 
 - **Experiment 1 — Cross-Dataset Generalization**：Xception 与 Effort 在 UADFV（49 Real + 49 Fake）上的视频级 AUROC、AP、EER，以及固定阈值 0.5 的辅助指标；
 - **Experiment 2 — Frame Sampling Efficiency**：在同一批 98 个视频上统一使用平均帧概率聚合，对比 8、16、32 帧的性能、总推理时间、单视频时间和峰值 GPU 显存。
+- **Experiment 3 — Paired Bootstrap Model Comparison**：复用冻结的预测结果，对 Effort 与 Xception 的 AUROC/AP 差值做 5,000 次配对 bootstrap；
+- **Experiment 4 — In-memory Degradation Robustness**：在不落盘、不改变原始 UADFV 的前提下，对 16 帧输入施加 JPEG quality=70 与先缩小至 50% 再恢复原尺寸的扰动；
+- **Experiment 5 — Dual-model Consensus and Uncertainty**：只有两个模型结论一致时自动输出结果；分歧样本统一标记为 `UNCERTAIN` 并建议人工复核。
 
 FaceForensics++、Celeb-DF-v2、DF40 均不是本项目的正式实验数据。若以后有 FF++ Mini，只能用于 Demo 或 pipeline sanity check，不能作为正式泛化结论。
 
@@ -52,6 +55,21 @@ python scripts/run_uadfv.py --config configs/paths.local.yaml --frames 8 16 32 -
 ```
 
 每次运行会在 `experiments/` 下生成本地 CSV、JSON 和 run manifest。视频级概率固定为所选帧概率的均值；阈值固定为 0.5，未使用 UADFV 标签优化。少数视频若实际可用帧少于 32，脚本只使用其全部真实可用帧并在预测 CSV 中记录，不会复制或补造图像。
+
+鲁棒性实验使用已解码帧的内存副本，不会重编码、覆盖或新增任何 UADFV 文件：
+
+```bash
+python scripts/run_degradation_robustness.py --config configs/paths.local.yaml \
+  --output-dir experiments/degradation_YYYYMMDD
+```
+
+该脚本固定请求 16 帧、固定 0.5 阈值、固定均值聚合，并记录 `original`、`jpeg70`、`resize50` 三种条件。可依据生成的 `summary.csv` 画出正式图：
+
+```bash
+python scripts/generate_project_figures.py \
+  --summary experiments/degradation_YYYYMMDD/summary.csv \
+  --output-dir experiments/degradation_YYYYMMDD/figures
+```
 
 ## Demo
 
