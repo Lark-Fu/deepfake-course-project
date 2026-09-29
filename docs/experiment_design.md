@@ -34,3 +34,18 @@ Run the 2 Real + 2 Fake sanity check before the complete evaluation. Every run w
 manifest, per-video prediction CSV, and summary JSON/CSV under `experiments/`. These outputs and
 the external UADFV files remain ignored by Git. The pinned upstream repositories and runtime facts
 are recorded in `docs/environment_notes.md`.
+
+## Experiment 3 — Paired Bootstrap Model Comparison
+
+Reuse the frozen baseline `video_predictions.csv`; do not run inference again. For each 8/16/32-frame
+setting, resample the same 98 video indices with replacement for Xception and Effort together. Use
+5,000 valid resamples with seed 2026, skipping one-class resamples. Report the distribution of
+`Effort - Xception` AUROC and AP, including the percentile interval and the fraction of resamples
+where the delta is positive. This fraction is descriptive and is not a conventional p-value.
+
+## Experiment 5 — Dual-model Consensus and Uncertainty
+
+Reuse the frozen 16-frame video predictions. At threshold 0.5, output automatic DEEPFAKE only when
+both models are fake, automatic REAL only when both are real, and `UNCERTAIN` otherwise. Report
+agreement rate (coverage), disagreement count, selective accuracy on the automatic subset, errors,
+and probability gaps. The analysis does not average probabilities to force a label for disagreements.

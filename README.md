@@ -55,7 +55,7 @@ python scripts/run_uadfv.py --config configs/paths.local.yaml --frames 8 16 32 -
 
 ## Demo
 
-Gradio Demo 支持图片、视频、Xception、Effort 与双模型比较；视频默认均匀采样 16 帧，并可选择 8/16/32 帧。它用于课堂演示，不会改变正式实验输出。
+Gradio Demo 支持图片、视频、Xception、Effort 与双模型比较；视频默认均匀采样 16 帧，并可选择 8/16/32 帧。它用于课堂演示，不会改变正式实验输出。在 **Dual-model Safety Analysis** 模式中，只有两个模型均跨过固定 0.5 阈值且结论相同才输出自动 REAL/DEEPFAKE；不一致时输出 `UNCERTAIN` 并建议人工复核。
 
 ```bash
 python app/app.py

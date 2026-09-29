@@ -22,3 +22,29 @@ not a claim of universal optimality.
 
 Generated local figures are `frames_vs_auroc.png` and `frames_vs_inference_time.png` in the run's
 ignored `experiments/` output directory.
+
+## Experiment 3 — Paired Bootstrap comparison
+
+Using the same 98 videos for both models, 5,000 valid paired bootstrap resamples per frame setting
+(seed 2026) gave the following ΔAUROC (`Effort - Xception`) percentile intervals:
+
+| Frames | Mean ΔAUROC | 95% interval | P(ΔAUROC > 0) |
+| ---: | ---: | --- | ---: |
+| 8 | 0.0156 | [-0.0165, 0.0497] | 0.8316 |
+| 16 | 0.0157 | [-0.0142, 0.0489] | 0.8546 |
+| 32 | 0.0148 | [-0.0146, 0.0476] | 0.8430 |
+
+Effort has higher point AUROC in all settings, but each paired-bootstrap interval crosses zero. For
+this UADFV/checkpoint/protocol combination, that supports a cautious statement of numerically higher
+performance rather than a claim of statistically stable superiority. The corresponding ΔAP intervals
+also cross zero. Raw bootstrap samples and distribution figures remain local in the ignored
+`experiments/paired_bootstrap_20260929/` directory.
+
+## Experiment 5 — Dual-model consensus
+
+On the frozen 16-frame predictions, 75/98 videos (76.5%) received an automatic high-agreement label;
+23/98 (23.5%) were reported as `UNCERTAIN` for manual review. Accuracy on the 75-video automatic
+subset was 0.920 (6 errors), with precision 0.887, recall 1.000, and F1 0.940. Mean absolute
+Xception/Effort probability gap was 0.081 for agreements and 0.322 for disagreements. This is a
+selective-classification behavior analysis, not a new detection metric. The scatter plot and detailed
+per-video analysis remain local in `experiments/consensus_20260929/`.
