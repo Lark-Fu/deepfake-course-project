@@ -1,0 +1,5 @@
+# Fill from the FaceForensics++ validation-set F1 calibration only.
+xception: null
+effort: null
+calibration_dataset: FaceForensics++ validation
+selection_rule: maximum_f1

@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+
+# Environment and secrets
+.env
+.env.*
+venv/
+.venv/
+env/
+*.local.yaml
+*.pem
+*.key
+credentials*
+token*
+secrets*
+
+# IDE
+.vscode/
+.idea/
+
+# Model weights
+weights/*
+!weights/README.md
+*.pth
+*.pt
+*.ckpt
+*.bin
+*.safetensors
+
+# Datasets and runtime media
+datasets/*
+!datasets/README.md
+*.mp4
+*.avi
+*.mov
+*.mkv
+
+# Runtime outputs
+tmp/
+temp/
+cache/
+outputs/
+logs/*
+!logs/.gitkeep
+*.log
+experiments/predictions/*
+!experiments/predictions/.gitkeep
+
+# Third-party source
+third_party/DeepfakeBench/
+third_party/Effort-AIGI-Detection/

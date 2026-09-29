@@ -1,0 +1,13 @@
+# Public, safe template. Copy this file to paths.local.yaml and replace placeholders.
+project_root: .
+deepfakebench_root: third_party/DeepfakeBench
+effort_bench_root: third_party/Effort-AIGI-Detection/DeepfakeBench
+weights_dir: weights
+experiments_dir: experiments
+datasets:
+  ffpp: <FFPP_PATH>
+  celebdf_v2: <CELEBDF_PATH>
+  df40: <DF40_PATH>
+checkpoints:
+  xception: weights/<OFFICIAL_XCEPTION_CHECKPOINT>.pth
+  effort: weights/<OFFICIAL_EFFORT_CHECKPOINT>.pth
