@@ -2,9 +2,12 @@
 from __future__ import annotations
 
 import sys
+from functools import lru_cache
 from pathlib import Path
 
+import cv2
 import gradio as gr
+import numpy as np
 import yaml
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -13,6 +16,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from app.inference import predict_batch, predict_image
 from app.model_manager import DeepfakeBenchAdapter, ModelUnavailableError
+from app.face_processor import FaceProcessor
 from app.video_processor import aggregate_probabilities, extract_faces
 from app.visualization import probability_curve
 
@@ -23,6 +27,7 @@ def _paths() -> dict:
     return yaml.safe_load(source.read_text(encoding="utf-8")) or {}
 
 
+@lru_cache(maxsize=2)
 def _adapter(model_name: str) -> DeepfakeBenchAdapter:
     config = _paths()
     checkpoint = (config.get("checkpoints") or {}).get(model_name.lower())
@@ -44,9 +49,13 @@ def _label(probability: float, threshold: float = 0.5) -> str:
 def detect_image(image, model_name: str):
     if image is None:
         return "Upload an image."
+    rgb = np.asarray(image.convert("RGB"))
+    face = FaceProcessor().crop_largest_face(cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
+    if face is None:
+        return "No face detected. Upload a clear, frontal face image."
     try:
         models = ["xception", "effort"] if model_name == "Compare both" else [model_name.lower()]
-        scores = {name: predict_image(_adapter(name), image) for name in models}
+        scores = {name: predict_image(_adapter(name), face) for name in models}
     except ModelUnavailableError as exc:
         return str(exc)
     text = "\n".join(f"{name.title()}: {_label(score)} ({score:.2%})" for name, score in scores.items())

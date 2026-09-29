@@ -1,9 +1,11 @@
 # Install PyTorch first using the CUDA 12.8 index; see docs/environment_notes.md.
-numpy>=1.26,<3
+numpy>=1.26,<2
 pandas>=2.2,<3
 PyYAML>=6.0
 Pillow>=10.0
-opencv-python-headless>=4.10
+opencv-python-headless>=4.10,<5
+# Declared by imgaug and torchtoolbox; pin it to the same NumPy-1-compatible line.
+opencv-python>=4.10,<5
 scikit-learn>=1.5
 matplotlib>=3.8
 seaborn>=0.13
@@ -17,3 +19,18 @@ timm>=1.0
 transformers>=4.45
 ftfy>=6.2
 regex>=2024.0
+
+# DeepfakeBench compatibility dependencies; PyTorch itself is installed separately as cu128.
+simplejson
+tensorboard
+efficientnet-pytorch
+segmentation-models-pytorch
+torchtoolbox
+loralib
+filterpy
+kornia
+fvcore
+imutils
+scikit-image
+dlib
+imgaug

@@ -35,3 +35,17 @@ Effort uses its official repository's bundled DeepfakeBench fork, pinned at
 ```
 
 Do not run either upstream `install.sh` wholesale: its pinned stack is retained only as a reference.
+The listed DeepfakeBench support packages are installed separately after the modern PyTorch stack;
+they are not permitted to downgrade PyTorch or CUDA.
+
+For this legacy upstream code, pin NumPy to the 1.26 series and OpenCV to the 4.10 series: `imgaug`
+uses a NumPy API removed in NumPy 2. The server environment passed `pip check` with this combination.
+
+## Released checkpoint loading
+
+The Xception wrapper loads the official base backbone from
+`third_party/DeepfakeBench/training/pretrained/` and the released course checkpoint from `weights/`.
+The Effort release checkpoint contains the full CLIP ViT-L/14 vision model plus the rank-one residual
+parameters. The wrapper reconstructs the documented ViT-L/14 architecture from its public config and
+loads that complete checkpoint directly. It intentionally avoids the upstream's redundant initial SVD
+work and its hard-coded, second copy of the CLIP model download. Neither model weight is committed.
