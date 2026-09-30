@@ -1,4 +1,4 @@
-"""Gradio UI for classroom demonstrations after official checkpoints are configured."""
+"""Legacy Gradio UI retained for simple classroom demonstrations."""
 from __future__ import annotations
 
 import sys

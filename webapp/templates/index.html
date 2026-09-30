@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DeepFake 智能检测与分析系统</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <p class="eyebrow">RESEARCH PROTOTYPE</p>
+      <h1>DeepFake 智能检测与分析系统</h1>
+      <p class="subtitle">DeepFake Detection and Analysis System</p>
+      <p class="intro">基于 Xception 与 Effort 的双模型智能检测，支持图片与视频分析，并通过一致性分析标记不确定样本。</p>
+    </header>
+
+    <section class="card detector-card" aria-labelledby="detect-title">
+      <div class="section-heading"><div><p class="eyebrow">ANALYZE MEDIA</p><h2 id="detect-title">上传并开始检测</h2></div><span id="ready-indicator" class="status neutral">等待文件</span></div>
+      <form id="detect-form" novalidate>
+        <div class="mode-row" role="radiogroup" aria-label="文件类型">
+          <label><input type="radio" name="media-type" value="image" checked> 图片</label>
+          <label><input type="radio" name="media-type" value="video"> 视频</label>
+        </div>
+        <label id="drop-zone" class="drop-zone" for="file-input">
+          <input id="file-input" type="file" accept=".jpg,.jpeg,.png" hidden>
+          <span class="upload-icon">↑</span><strong>拖拽文件到此处，或选择文件</strong>
+          <small id="format-hint">支持 JPG、JPEG、PNG</small>
+          <span id="file-meta" class="file-meta">尚未选择文件</span>
+        </label>
+        <div id="preview-wrap" class="preview-wrap" hidden><img id="image-preview" alt="上传文件预览" hidden><video id="video-preview" controls muted hidden></video></div>
+
+        <div class="controls-grid">
+          <label>检测模型
+            <select id="model-select" name="model">
+              <option value="dual" selected>Dual-model Safety Analysis</option>
+              <option value="xception">Xception</option>
+              <option value="effort">Effort</option>
+            </select>
+          </label>
+          <label id="frame-control" hidden>视频采样帧数
+            <select id="frame-select" name="frames"><option value="8">8 frames</option><option value="16" selected>16 frames</option><option value="32">32 frames</option></select>
+            <small>16 帧在当前实验中接近 32 帧性能，同时显著降低推理时间。</small>
+          </label>
+        </div>
+        <button id="detect-button" type="submit" class="primary-button" disabled>开始检测</button>
+        <p id="loading-message" class="loading" hidden><span class="spinner"></span>正在进行人脸检测与 DeepFake 分析...</p>
+      </form>
+    </section>
+
+    <section id="result-section" class="card result-card" hidden aria-live="polite">
+      <div class="section-heading"><div><p class="eyebrow">DETECTION RESULT</p><h2>检测结果</h2></div><span id="prediction-badge" class="status"></span></div>
+      <p id="recommendation" class="recommendation" hidden></p>
+      <div id="metrics" class="metrics"></div>
+      <section id="video-analysis" hidden>
+        <h3>Frame-level Fake Probability</h3>
+        <div class="chart-wrap"><canvas id="probability-chart" aria-label="帧级伪造概率曲线"></canvas></div>
+        <h3>Top-5 Suspicious Frames</h3><div id="suspicious-frames" class="frame-gallery"></div>
+      </section>
+    </section>
+
+    <section class="system-info" aria-label="系统信息">
+      <div><strong>Detection Models</strong><span>Xception + Effort</span></div><div><strong>Default Frames</strong><span>16</span></div><div><strong>Decision Mode</strong><span>Dual-model Consensus</span></div><div><strong>Dataset Evaluation</strong><span>UADFV</span></div>
+      <p>课程研究原型系统。检测结果仅供教学演示与辅助分析，不应作为唯一判断依据。</p>
+    </section>
+  </main>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

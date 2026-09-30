@@ -71,12 +71,24 @@ python scripts/generate_project_figures.py \
   --output-dir experiments/degradation_YYYYMMDD/figures
 ```
 
-## Demo
+## Flask Web Demo（课堂演示推荐）
 
-Gradio Demo 支持图片、视频、Xception、Effort 与双模型比较；视频默认均匀采样 16 帧，并可选择 8/16/32 帧。它用于课堂演示，不会改变正式实验输出。在 **Dual-model Safety Analysis** 模式中，只有两个模型均跨过固定 0.5 阈值且结论相同才输出自动 REAL/DEEPFAKE；不一致时输出 `UNCERTAIN` 并建议人工复核。
+Flask Web Demo 是推荐的课堂演示入口。它复用冻结的 Xception、Effort、既有人脸检测、视频抽帧和双模型共识逻辑；不会写入 UADFV、权重或正式实验输出。页面支持拖拽上传 JPG/JPEG/PNG 和 MP4/AVI/MOV（最大 100 MB）、图片/视频预览、单模型或双模型检测、视频的 8/16/32 帧选择、概率条、帧级概率曲线和 Top-5 可疑帧。
+
+在配置好 `configs/paths.local.yaml` 中的 checkpoint 与上游模型路径后，在服务器项目根目录执行：
 
 ```bash
-python app/app.py
+/data/conda_envs/fq/data/bin/python webapp/app.py
+```
+
+默认监听 `0.0.0.0:5000`；本机可打开 `http://127.0.0.1:5000`。远程访问时使用服务器主机名加端口 `5000`，代码中不写死服务器 IP。`GET /health` 可检查 GPU 与 checkpoint 是否就绪。上传文件只会短暂保存在被 Git 忽略的 `webapp/tmp/`，请求结束后会删除。
+
+## Legacy / Simple Gradio Demo
+
+保留原 Gradio Demo 以便对比或快速回滚。它支持图片、视频、Xception、Effort 与双模型比较；视频默认均匀采样 16 帧，并可选择 8/16/32 帧。它用于课堂演示，不会改变正式实验输出。在 **Dual-model Safety Analysis** 模式中，只有两个模型均跨过固定 0.5 阈值且结论相同才输出自动 REAL/DEEPFAKE；不一致时输出 `UNCERTAIN` 并建议人工复核。
+
+```bash
+python app/gradio_app.py
 ```
 
 数据、权重、演示媒体、实验输出和 `paths.local.yaml` 均不得提交 GitHub。

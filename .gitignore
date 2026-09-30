@@ -4,6 +4,7 @@ __pycache__/
 *.so
 .pytest_cache/
 .mypy_cache/
+.playwright-cli/
 
 # Environment and secrets
 .env
@@ -41,6 +42,8 @@ datasets/*
 
 # Runtime outputs
 tmp/
+webapp/tmp/
+webapp/static/generated/
 temp/
 cache/
 outputs/
