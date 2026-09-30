@@ -83,6 +83,18 @@ Flask Web Demo 是推荐的课堂演示入口。它复用冻结的 Xception、Ef
 
 默认监听 `0.0.0.0:5000`；本机可打开 `http://127.0.0.1:5000`。远程访问时使用服务器主机名加端口 `5000`，代码中不写死服务器 IP。`GET /health` 可检查 GPU 与 checkpoint 是否就绪。上传文件只会短暂保存在被 Git 忽略的 `webapp/tmp/`，请求结束后会删除。
 
+### Classroom demo media
+
+如需从已配置的 UADFV 帧序列重新生成一组小型课堂演示媒体（高置信 REAL、DEEPFAKE、双模型 `UNCERTAIN`、JPEG70 变体及单张备份图），可运行：
+
+```bash
+/data/conda_envs/fq/data/bin/python scripts/prepare_classroom_demo_media.py \
+  --uadfv-root /absolute/path/to/UADFV \
+  --output-dir runtime_media/classroom_demo_YYYYMMDD
+```
+
+该脚本只读取 UADFV，并将转换结果放入 Git 忽略的 `runtime_media/`。它是教学展示素材，不是正式实验，也不会覆盖已有输出目录。
+
 ## Legacy / Simple Gradio Demo
 
 保留原 Gradio Demo 以便对比或快速回滚。它支持图片、视频、Xception、Effort 与双模型比较；视频默认均匀采样 16 帧，并可选择 8/16/32 帧。它用于课堂演示，不会改变正式实验输出。在 **Dual-model Safety Analysis** 模式中，只有两个模型均跨过固定 0.5 阈值且结论相同才输出自动 REAL/DEEPFAKE；不一致时输出 `UNCERTAIN` 并建议人工复核。

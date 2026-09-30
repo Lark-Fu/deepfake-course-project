@@ -44,6 +44,7 @@ datasets/*
 tmp/
 webapp/tmp/
 webapp/static/generated/
+runtime_media/
 temp/
 cache/
 outputs/
